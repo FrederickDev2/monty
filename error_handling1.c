@@ -1,135 +1,57 @@
 #include "monty.h"
 
+
 /**
- * push - Add node to the stack
- * @stack: head of linkedlist
- * @line_number: line number of the instruction
- *
- * Return: No return
+ * stderr_usage - usage error.
+ * Return: EXIT_FAILURE
  */
-void push(stack_t **stack, unsigned int line_number)
+void stderr_usage(void)
 {
+	fprintf(stderr, "USAGE: monty file\n");
+	exit(EXIT_FAILURE);
+}
+/**
+ * stderr_malloc - Prints malloc error messages.
+ * Return: EXIT_FAILURE
+ */
 
-	int n = 0;
-
-	if (globalvar.token2 == NULL)
-	{
-		free_dlistint(*stack);
-		stderr_int(line_number);
-	}
-	if (!_isdigit() || stack == NULL)
-	{
-		free_dlistint(*stack);
-		stderr_int(line_number);
-	}
-	n = atoi(globalvar.token2);
-	if (*stack  == NULL)
-	{
-		create_node_stackfirst(stack, n);
-	}
-	else
-	{
-		create_node_stackend(stack, n);
-	}
+void stderr_malloc(void)
+{
+	fprintf(stderr, "Error: malloc failed\n");
+	free_globalvars();
+	exit(EXIT_FAILURE);
+}
+/**
+ * stderr_fopen - error of fopen.
+ * @filename: type pointer char of filename
+ * Return: EXIT_FAILURE
+ */
+void stderr_fopen(char *filename)
+{
+	fprintf(stderr, "Error: Can't open file %s\n", filename);
+	exit(EXIT_FAILURE);
+}
+/**
+ * stderr_int - error of int.
+ * @line_number: type pointer of line number
+ * Return: EXIT_FAILURE
+ */
+void stderr_int(unsigned int line_number)
+{
+	fprintf(stderr, "L%u: usage: push integer\n", line_number);
+	free_globalvars();
+	exit(EXIT_FAILURE);
 }
 
 /**
- * pall - Print the stack
- * @stack: head of linkedlist
- * @line_number: line number of the instruction
- *
- * Return: No return
+ * stderr_unknown - unknown error messagess.
+ * @line_number: line number of the instruction.
+ * @token: type pointer char of the instruction.
+ * Return: EXIT_FAILURE
  */
-void pall(stack_t **stack, unsigned int line_number)
+void stderr_unknown(char *token, unsigned int line_number)
 {
-
-	stack_t *temp = NULL;
-
-
-	if (*stack == NULL)
-	{
-		return;
-	}
-	if (*stack == NULL && line_number != 1)
-	{
-		free_dlistint(*stack);
-		free_globalvars();
-		exit(EXIT_SUCCESS);
-	}
-	temp = *stack;
-	while (temp->next != NULL)
-		temp = temp->next;
-	while (temp->prev != NULL)
-	{
-		printf("%d", temp->n);
-		temp = temp->prev;
-		printf("\n");
-	}
-	printf("%d\n", temp->n);
-}
-
-
-/**
- * pint - Print the stack
- * @stack: head of linkedlist
- * @line_number: line number of the instruction
- *
- * Return: No return
- */
-void pint(stack_t **stack, unsigned int line_number)
-{
-
-	stack_t *temp = NULL;
-
-	if (stack == NULL || *stack == NULL)
-	{
-		pint_e(line_number);
-		return;
-	}
-	temp = *stack;
-	while (temp->next != NULL)
-		temp = temp->next;
-
-	printf("%d", temp->n);
-	printf("\n");
-}
-
-/**
- * swap - Print the stack
- * @stack: head of linkedlist
- * @line_number: line number of the instruction
- *
- * Return: No return
- */
-void swap(stack_t **stack, unsigned int line_number)
-{
-	stack_t *temp;
-	int i, j;
-
-	if (*stack == NULL || stack == NULL)
-		op_e(line_number, "swap");
-
-	temp = (*stack)->next;
-	if ((*stack)->next == NULL)
-		op_e(line_number, "swap");
-	while (temp->next != NULL)
-	{
-		temp = temp->next;
-	}
-	i = temp->n;
-	j = temp->prev->n;
-	temp->n = j;
-	temp->prev->n = i;
-}
-/**
- * nop - does not do anything
- * @stack: head of linkedlist
- * @line_number: line number of the instruction
- *
- * Return: No return
- */
-void nop(stack_t **stack, unsigned int line_number)
-{
-	(void)stack;
-	(void)line_number;
+	fprintf(stderr, "L%u: unknown instruction %s\n", line_number, token);
+	free_globalvars();
+	exit(EXIT_FAILURE);
 }
