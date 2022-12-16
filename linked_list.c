@@ -1,78 +1,80 @@
 #include "monty.h"
 
-/**
- * create_node_stackfirst - create a node stack.
- * @stack: A pointer to top and bottom stack.
- * @n: the value
- * Return: the node
- */
-stack_t *create_node_stackfirst(stack_t **stack, int n)
-{
-	stack_t *newnode_stack;
+void monty_rotl(stack_t **stack, unsigned int line_number);
+void monty_rotr(stack_t **stack, unsigned int line_number);
+void monty_stack(stack_t **stack, unsigned int line_number);
+void monty_queue(stack_t **stack, unsigned int line_number);
 
-	if (stack == NULL)
-		return (NULL);
-	newnode_stack = malloc(sizeof(stack_t));
-	if (newnode_stack == NULL)
-		stderr_malloc();
-	newnode_stack->n = n;
-	newnode_stack->next = *stack;
-	newnode_stack->prev = NULL;
-	*stack = newnode_stack;
-	return (newnode_stack);
+/**
+ * monty_rotl - Rotates the top value of a stack_t linked list to the bottom.
+ * @stack: A pointer to the top mode node of a stack_t linked list.
+ * @line_number: The current working line number of a Monty bytecodes file.
+ */
+void monty_rotl(stack_t **stack, unsigned int line_number)
+{
+	stack_t *top, *bottom;
+
+	if ((*stack)->next == NULL || (*stack)->next->next == NULL)
+		return;
+
+	top = (*stack)->next;
+	bottom = (*stack)->next;
+	while (bottom->next != NULL)
+		bottom = bottom->next;
+
+	top->next->prev = *stack;
+	(*stack)->next = top->next;
+	bottom->next = top;
+	top->next = NULL;
+	top->prev = bottom;
+
+	(void)line_number;
 }
 
 /**
- * create_node_stackend - create a node stack at end.
- * @stack: A pointer to top and bottom stack.
- * @n: the value
- * Return: the node
+ * monty_rotr - Rotates the bottom value of a stack_t linked list to the top.
+ * @stack: A pointer to the top mode node of a stack_t linked list.
+ * @line_number: The current working line number of a Monty bytecodes file.
  */
-stack_t *create_node_stackend(stack_t **stack, int n)
+void monty_rotr(stack_t **stack, unsigned int line_number)
 {
-	stack_t *newnode_stack;
-	stack_t *temp;
+	stack_t *top, *bottom;
 
-	if (stack == NULL)
-		return (NULL);
-	newnode_stack = malloc(sizeof(stack_t));
-	if (newnode_stack == NULL)
-		stderr_malloc();
-	temp = *stack;
-	while (temp->next != NULL)
-		temp = temp->next;
-	temp->next = newnode_stack;
-	newnode_stack->n = n;
-	newnode_stack->prev = temp;
-	newnode_stack->next = NULL;
-	return (newnode_stack);
+	if ((*stack)->next == NULL || (*stack)->next->next == NULL)
+		return;
+
+	top = (*stack)->next;
+	bottom = (*stack)->next;
+	while (bottom->next != NULL)
+		bottom = bottom->next;
+
+	bottom->prev->next = NULL;
+	(*stack)->next = bottom;
+	bottom->prev = *stack;
+	bottom->next = top;
+	top->prev = bottom;
+
+	(void)line_number;
 }
-/**
- * add_dnodeint - adds a new node at the beginning of a dlistint_t list.
- * @head: pointer to the first element of the list
- * @n:integer
- * Return: the pointer to a new node at the beginning of a dlistint_t list
- */
-stack_t *add_dnodeint(stack_t **head, int n)
-{
-	stack_t *newnode = NULL;
 
-	if (head == NULL)
-		return (NULL);
-	newnode = malloc(sizeof(stack_t));
-	if (newnode == NULL)
-		return (NULL);
-	newnode->n = n;
-	if (*head == NULL)
-	{
-		newnode->next = *head;
-		newnode->prev = NULL;
-		*head = newnode;
-		return (newnode);
-	}
-	newnode->n = n;
-	(*head)->prev = newnode;
-	newnode->next = *head;
-	*head = newnode;
-	return (newnode);
+/**
+ * monty_stack - Converts a queue to a stack.
+ * @stack: A pointer to the top mode node of a stack_t linked list.
+ * @line_number: The current working line number of a Monty bytecodes file.
+ */
+void monty_stack(stack_t **stack, unsigned int line_number)
+{
+	(*stack)->n = STACK;
+	(void)line_number;
+}
+
+/**
+ * monty_queue - Converts a stack to a queue.
+ * @stack: A pointer to the top mode node of a stack_t linked list.
+ * @line_number: The current working line number of a Monty bytecodes file.
+ */
+void monty_queue(stack_t **stack, unsigned int line_number)
+{
+	(*stack)->n = QUEUE;
+	(void)line_number;
 }
