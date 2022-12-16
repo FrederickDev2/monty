@@ -1,52 +1,63 @@
-#include "monty.h"
+#include <stdlib.h>
+
+char *get_int(int num);
+unsigned int _abs(int);
+int get_numbase_len(unsigned int num, unsigned int base);
+void fill_numbase_buff(unsigned int num, unsigned int base,
+		       char *buff, int buff_size);
 
 /**
- * get_int - get char pointer to new str with int
+ * get_int - gets a character pointer to new string containing int
  * @num: number to convert to string
- * Return: char pointer converted as null if fails and malloc.
+ *
+ * Return: character pointer to newly created string. NULL if malloc fails.
  */
 char *get_int(int num)
 {
-	long num_v = 0;
-	unsigned int tmp;
-	int len = 0;
+	unsigned int temp;
+	int length = 0;
+	long num_l = 0;
 	char *ret;
 
-	tmp = abs_m(num);
-	len = len_buff_uint(tmp, 10);
+	temp = _abs(num);
+	length = get_numbase_len(temp, 10);
 
-	if (num < 0 || num_v < 0)
-		len++;
-	ret = malloc(len + 1);
+	if (num < 0 || num_l < 0)
+		length++; /* negative sign */
+	ret = malloc(length + 1); /* create new string */
 	if (!ret)
 		return (NULL);
 
-	full_buff(tmp, 10, ret, len);
-	if (num < 0 || num_v < 0)
+	fill_numbase_buff(temp, 10, ret, length);
+	if (num < 0 || num_l < 0)
 		ret[0] = '-';
 
 	return (ret);
 }
+
 /**
- * abs_m - abs value of int
+ * _abs - gets the absolute value of an integer
  * @i: integer to get absolute value of
- * Return: unsigned int of i
+ *
+ * Return: unsigned integer abs rep of i
  */
-unsigned int abs_m(int i)
+unsigned int _abs(int i)
 {
 	if (i < 0)
 		return (-(unsigned int)i);
 	return ((unsigned int)i);
 }
+
 /**
- * len_buff_uint - length of buff for an unsigned int
+ * get_numbase_len - gets length of buffer needed for an unsigned int
  * @num: number to get length needed for
  * @base: base of number representation used by buffer
- * Return: int of len of buff
+ *
+ * Return: integer containing length of buffer needed (doesn't contain null bt)
  */
-int len_buff_uint(unsigned int num, unsigned int base)
+int get_numbase_len(unsigned int num, unsigned int base)
 {
-	int len = 1;
+	int len = 1; /* all numbers contain atleast one digit */
 
 	while (num > base - 1)
 	{
@@ -55,15 +66,18 @@ int len_buff_uint(unsigned int num, unsigned int base)
 	}
 	return (len);
 }
+
 /**
- * full_buff - complete buff with numbers
- * @num: number to convert to str
- * @base: b number
- * @buff: buffer to be completed
- * @buff_size: size of buffer
- * Return: void.
+ * fill_numbase_buff - fills buffer with correct numbers up to base 36
+ * @num: number to convert to string given base
+ * @base: base of number used in conversion, only works up to base 36
+ * @buff: buffer to fill with result of conversion
+ * @buff_size: size of buffer in bytes
+ *
+ * Return: always void.
  */
-void full_buff(unsigned int num, unsigned int base, char *buff, int buff_size)
+void fill_numbase_buff(unsigned int num, unsigned int base,
+			char *buff, int buff_size)
 {
 	int rem, i = buff_size - 1;
 
@@ -71,32 +85,11 @@ void full_buff(unsigned int num, unsigned int base, char *buff, int buff_size)
 	while (i >= 0)
 	{
 		rem = num % base;
-		if (rem > 9)
-			buff[i] = rem + 87;
+		if (rem > 9) /* return lowercase ascii val representation */
+			buff[i] = rem + 87; /* 10 will be a, 11 = b, ... */
 		else
 			buff[i] = rem + '0';
 		num /= base;
 		i--;
 	}
-}
-
-/**
- * _isdigit - Entry point
- *
- * Return: if is digit  or not, return 1 else 0
- */
-int _isdigit(void)
-{
-	int i = 0;
-
-	if (globalvar.token2[0] == '-' || globalvar.token2[0] == '+')
-		i++;
-	while (globalvar.token2[i])
-	{
-
-		if (isdigit(globalvar.token2[i]) == 0)
-			return (0);
-		i++;
-	}
-	return (1);
 }
