@@ -1,4 +1,5 @@
-[	This program prints "School" and a new line
+[	
+	This program prints "School" and a new line
 	S - 83, c - 99, h - 104, o - 111, o - 111, l - 108 
 ]
 ++++++++							Add 8 to cell #0
