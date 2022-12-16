@@ -1,46 +1,166 @@
-#include "monty.h"
+#include <stdlib.h>
+
+char **strtow(char *str, char *delims);
+int is_delim(char ch, char *delims);
+int get_word_length(char *str, char *delims);
+int get_word_count(char *str, char *delims);
+char *get_next_word(char *str, char *delims);
 
 /**
- * array_len - calculates the array of a token.
- * Return: Lenght of the token.
+ * strtow - takes a string and seperates its words
+ *
+ * @str: string to seperate into words
+ * @delims: delimitors to use to delimit words
+ *
+ * Return: 2D array of pointers to each word
  */
-unsigned int array_len(void)
-{
-	unsigned int token_len = 0;
 
-	while (globalvar.token2[token_len])
-		token_len++;
-	return (token_len);
-}
-/**
- * tokerr - makes the last element of instructions as error code.
- * @error_status: type int where the error is saved as srt.
- */
-void tokerr(int error_status)
+char **strtow(char *str, char *delims)
 {
-	int token_len = 0, i = 0;
-	char *exit_str = NULL;
-	char *new_token = NULL;
+	char **words = NULL;
+	int wc, wordLen, n, i = 0;
 
-	token_len = array_len();
-	new_token = malloc(sizeof(char *) * (token_len + 2));
-	if (!globalvar.token2)
+	if (str == NULL || !*str)
+		return (NULL);
+	wc = get_word_count(str, delims);
+
+
+	if (wc == 0)
+		return (NULL);
+	words = malloc((wc + 1) * sizeof(char *));
+	if (words == NULL)
+		return (NULL);
+	while (i < wc)
 	{
-		stderr_malloc();
-		return;
-	}
-	while (i < token_len)
-	{
-		new_token[i] = globalvar.token2[i];
+		wordLen = get_word_length(str, delims);
+		if (is_delim(*str, delims))
+		{
+			str = get_next_word(str, delims);
+		}
+		words[i] = malloc((wordLen + 1) * sizeof(char));
+		if (words[i] == NULL)
+		{
+			while (i >= 0)
+			{
+				i--;
+				free(words[i]);
+			}
+			free(words);
+			return (NULL);
+		}
+		n = 0;
+		while (n < wordLen)
+		{
+			words[i][n] = *(str + n);
+			n++;
+		}
+		words[i][n] = '\0'; /* set end of str */
+		str = get_next_word(str, delims);
 		i++;
 	}
-	exit_str = get_int(error_status);
-	if (!exit_str)
+	words[i] = NULL; /* last element is null for iteration */
+	return (words);
+}
+
+/**
+ * is_delim - checks if stream has delimitor char
+ *
+ * @ch: character in stream
+ *
+ * @delims: Pointer to null terminated array of delimitors
+ *
+ * Return: 1 (success) 0 (failure)
+ */
+
+int is_delim(char ch, char *delims)
+{
+	int i = 0;
+
+	while (delims[i])
 	{
-		free(globalvar.token2);
-		stderr_malloc();
-		return;
+		if (delims[i] == ch)
+			return (1);
+		i++;
 	}
-	free(globalvar.token2);
-	globalvar.token2 = new_token;
+	return (0);
+}
+
+/**
+ * get_word_length - gets the word length of cur word in str
+ *
+ * @str: string to get word length from current word
+ * @delims: delimitors to use to delimit words
+ *
+ * Return: word length of current word
+ */
+
+int get_word_length(char *str, char *delims)
+{
+	int wLen = 0, pending = 1, i = 0;
+
+	while (*(str + i))
+	{
+		if (is_delim(str[i], delims))
+			pending = 1;
+		else if (pending)
+		{
+			wLen++;
+		}
+		if (wLen > 0 && is_delim(str[i], delims))
+			break;
+		i++;
+	}
+	return (wLen);
+}
+
+/**
+ * get_word_count - gets the word count of a string
+ *
+ * @str: string to get word count from
+ * @delims: delimitors to use to delimit words
+ *
+ * Return: the word count of the string
+ */
+
+int get_word_count(char *str, char *delims)
+{
+	int wc = 0, pending = 1, i = 0;
+
+	while (*(str + i))
+	{
+		if (is_delim(str[i], delims))
+			pending = 1;
+		else if (pending)
+		{
+			pending = 0;
+			wc++;
+		}
+		i++;
+	}
+	return (wc);
+}
+
+/**
+ * get_next_word - gets the next word in a string
+ *
+ * @str: string to get next word from
+ * @delims: delimitors to use to delimit words
+ *
+ * Return: pointer to first char of next word
+ */
+
+char *get_next_word(char *str, char *delims)
+{
+	int pending = 0;
+	int i = 0;
+
+	while (*(str + i))
+	{
+		if (is_delim(str[i], delims))
+			pending = 1;
+		else if (pending)
+			break;
+		i++;
+	}
+	return (str + i);
 }
